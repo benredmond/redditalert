@@ -1,23 +1,25 @@
 import praw
 import time
 import os
-import threading
-from threading import Timer
 import asyncio
 import discord
 from discord.ext.commands import Bot
-from asgiref.sync import AsyncToSync
+from os.path import join, dirname
+from dotenv import load_dotenv
+
+dotenv_path = join(dirname(__file__), '.env')
+load_dotenv(dotenv_path)
 now = time.time()
-channel = "NONE"
+place_to_send = None
 
-reddit = praw.Reddit(user_agent='script:test:v1.0.0 (by /u/bisonbear2)',
-                     client_id=os.environ['ID'], client_secret=os.environ['SECRET'],
-                     username=os.environ['USER'], password=os.environ['PASS'])
-
+reddit = praw.Reddit(client_id=os.getenv('REDDIT_ID'),
+                     client_secret=os.getenv('REDDIT_SECRET'),
+                     password=os.getenv('REDDIT_PASS'),
+                     user_agent='script:test:v1.0.0 (by /u/bisonbear2)',
+                     username=os.getenv('REDDIT_USERNAME'))
 
 
 BOT_PREFIX = ("?", "!")
-TOKEN = os.environ['DISCORD_TOKEN']
 client = Bot(command_prefix=BOT_PREFIX)
 
 @client.event
@@ -26,16 +28,9 @@ async def on_ready():
     print(client.user.name)
     print(client.user.id)
     print('------')
+    print('Run !start in the channel where you want the bot to be used')
 
-@client.event
-async def on_message(message):
-    print("RECIEVED")
-    if message == "!start":
-        channel = message.channel
-        print (channel)
-
-
-@client.command()
+@client.command(description="Invest an amount of memecoins into a post, ex: !invest 'post_id' 100")
 async def invest(id, amount):
     print(id, amount)
     post = reddit.submission(id=id)
@@ -44,15 +39,21 @@ async def invest(id, amount):
             post.downvote()
             top_level_comment.reply('!invest ' + amount)
             post.upvote()
+            embed = discord.Embed(title='Invest {0} in post {1}'.format(amount, id), color=0xff4500)
+            await client.send_message(place_to_send, embed=embed)
 
-@client.command()
-async def test(amount):
-    print(amount)
+
+@client.command(pass_context=True, description="Sets the bot to send messages to whichever channel you run this command in")
+async def start(ctx):
+    global place_to_send
+    place_to_send = ctx.message.channel
+    embed = discord.Embed(title='Starting bot in {0}'.format(place_to_send), color=0xff4500)
+    await client.send_message(place_to_send, embed=embed)
+    # await client.send_message(place_to_send, '```Starting bot in **{0}** ```'.format(place_to_send))
 
 @asyncio.coroutine
 async def listen_for_posts():
     await client.wait_until_ready()
-    start_time = time.time()
 
     subreddit = reddit.subreddit('MemeEconomy')
     posts =  subreddit.stream.submissions(pause_after=0)
@@ -65,9 +66,12 @@ async def listen_for_posts():
 
         elif post.created_utc > now:
             print(post.title)
-            if not channel == "NONE":
-                await client.send_message(channel, post.url)
-                await client.send_message(channel, post.title + ' ' + post.id)
+            if not place_to_send is None:
+                embed = discord.Embed(title='**{0}**'.format(post.title), url=post.shortlink,
+                                      description="ID: **{0}** *(use this as first option in **!invest**)*".format(post.id), color=0xff4500)
+                await client.send_message(place_to_send, embed=embed)
+                await client.send_message(place_to_send, post.url)
+                # await client.send_message(place_to_send, post.title + ' ' + post.id)
 
 @asyncio.coroutine
 async def dontcrash():
@@ -77,4 +81,4 @@ async def dontcrash():
 
 client.loop.create_task(dontcrash())
 client.loop.create_task(listen_for_posts())
-client.run(TOKEN)
+client.run(os.getenv('DISCORD_TOKEN'))
