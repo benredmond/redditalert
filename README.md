@@ -10,5 +10,5 @@ Steps to set up bot:
 1. Click 'create app', then copy the app token (2 underneath the app title) and put it in the .env under 'REDDIT_ID'
 1. Copy the 'secret' field from your Reddit app and put it in the .env under 'REDDIT_SECRET'
 1. Put your Reddit username and password in the .env file under 'REDDIT_USER' and 'REDDIT_PASS'
-1. Run the install script in the terminal by doing **./install.sh**
-1. Run the bot by doing **python3 main.py** 
+1. Run the install script in the terminal by typing **./install.sh**
+1. Run the bot by typing **python3 main.py** 
