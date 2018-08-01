@@ -1,4 +1,9 @@
 # Reddit Alert
+
+Prerequisites:
+1. Python 3 installed on your computer 
+1. PIP installed on your computer (should be installed already if Python 3 is installed)
+
 Steps to set up bot:
 
 1. Open the .env file in the project directory
@@ -11,4 +16,4 @@ Steps to set up bot:
 1. Copy the 'secret' field from your Reddit app and put it in the .env under 'REDDIT_SECRET'
 1. Put your Reddit username and password in the .env file under 'REDDIT_USER' and 'REDDIT_PASS'
 1. Run the install script in the terminal by typing **./install.sh**
-1. Run the bot by typing **python3 main.py** 
+1. Run the bot by typing **python3 main.py** (if your default Python is already v3 just type **python main.py**)
