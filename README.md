@@ -1,7 +1,7 @@
 # Reddit Alert
 
 Prerequisites:
-1. Python 3 installed on your computer 
+1. Python 3 installed on your computer (check with **python --version** or **python3 --version**)
 1. PIP installed on your computer (should be installed already if Python 3 is installed)
 
 Steps to set up bot:
