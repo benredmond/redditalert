@@ -39,7 +39,7 @@ async def invest(id, amount):
             post.downvote()
             top_level_comment.reply('!invest ' + amount)
             post.upvote()
-            embed = discord.Embed(title='Invest {0} in post {1}'.format(amount, id), color=0xff4500)
+            embed = discord.Embed(title='Invested {0} memecoins in post: {1}'.format(amount, id), color=0xff4500)
             await client.send_message(place_to_send, embed=embed)
 
 
