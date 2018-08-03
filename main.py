@@ -93,12 +93,10 @@ async def listen_for_posts():
 
                 for id in watched_posts.copy():
                     submission = reddit.submission(id=id)
-                    print("SCORE: " + str (submission.score))
-                    print("TIME DIFF: " +str ((curTime - watched_posts[id]) / 60))
 
                     if (curTime - watched_posts[id]) / 60 > 60:
                         del(watched_posts[id])
-                    elif coins > 100 and \
+                    elif (int)(coins * .3) > 100 and \
                             (curTime - watched_posts[id]) / 60 > 25 and \
                             submission.score >= 25 and \
                             submission.score >= (curTime - watched_posts[id]) / 60:
@@ -110,7 +108,6 @@ async def listen_for_posts():
             await asyncio.sleep(30)
 
         elif post.created_utc > now:
-            print(post.title)
             if not place_to_send is None:
                 if auto_invest:
                     watched_posts[post.id] = post.created_utc
